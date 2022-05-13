@@ -139,8 +139,8 @@ class SqlApi(object):
 
         :param: - bookname name of the book to add
         """
-        self.cursor.execute("SELECT count(*) FROM `books` WHERE `bookname` == '{}'".format(bookname))
-        if self.cursor.fetchall():
+        self.cursor.execute("SELECT count(*) FROM `books` WHERE `bookname` = '{}'".format(bookname))
+        if self.cursor.fetchall()[0][0]:
             print("该书已在库中")
         else:
             rows = self.cursor.execute("INSERT INTO `books` (`bookname`) VALUES ('{}')".format(bookname))
@@ -155,7 +155,7 @@ class SqlApi(object):
         num of books
         """
         self.cursor.execute("SELECT count(*) FROM `books`")
-        num = self.cursor.fetchall()
+        num = self.cursor.fetchall()[0][0]
         print("书的总数为： ", num)
 
     def remove_book(self, bookid):
@@ -164,7 +164,7 @@ class SqlApi(object):
 
         :param: -bookid primary key
         """
-        affect_row = self.cursor.execute("DELETE FROM `books` WHERE `bookid` == {}".format(bookid))
+        affect_row = self.cursor.execute("DELETE FROM `books` WHERE `bookid` = {}".format(bookid))
         self.db.commit()
         if affect_row:
             print("移除成功")
@@ -183,4 +183,4 @@ class SqlApi(object):
 
 if __name__ == "__main__":
     sqlApi = SqlApi()
-    sqlApi.add_book("Web安全深度解析")
+    sqlApi.add_book("jvm虚拟机")
