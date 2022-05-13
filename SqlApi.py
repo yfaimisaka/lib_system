@@ -1,6 +1,3 @@
-from ctypes import create_unicode_buffer
-from os import lstat
-from sqlite3 import Cursor
 import pymysql
 
 
@@ -134,6 +131,46 @@ class SqlApi(object):
         else:
             print("还书失败,请联系管理员")
 
+    # ========================================
+    # the functions below are belong to manager
+    def add_book(self, bookname: str):
+        """
+        add new book
+
+        :param: - bookname name of the book to add
+        """
+        self.cursor.execute("SELECT count(*) FROM `books` WHERE `bookname` == '{}'".format(bookname))
+        if self.cursor.fetchall():
+            print("该书已在库中")
+        else:
+            rows = self.cursor.execute("INSERT INTO `books` (`bookname`) VALUES ('{}')".format(bookname))
+            self.db.commit()
+            if rows:
+                print("添加成功")
+            else:
+                print("添加失败")
+
+    def count_book(self):
+        """
+        num of books
+        """
+        self.cursor.execute("SELECT count(*) FROM `books`")
+        num = self.cursor.fetchall()
+        print("书的总数为： ", num)
+
+    def remove_book(self, bookid):
+        """
+        remove book from datebase
+
+        :param: -bookid primary key
+        """
+        affect_row = self.cursor.execute("DELETE FROM `books` WHERE `bookid` == {}".format(bookid))
+        self.db.commit()
+        if affect_row:
+            print("移除成功")
+        else:
+            print("移除失败")
+
     def close(self):
         self.cursor.close()
         self.db.close()
@@ -146,4 +183,4 @@ class SqlApi(object):
 
 if __name__ == "__main__":
     sqlApi = SqlApi()
-    sqlApi.register("小黄")
+    sqlApi.add_book("Web安全深度解析")
